@@ -128,10 +128,15 @@ class Strava:
             "grant_type": "refresh_token",
             "f": "json",
         }
-        token_object = requests.post(
+        response = requests.post(
             "https://www.strava.com/oauth/token", data=payload
         )
-        access_token = token_object.json()["access_token"]
+        response.raise_for_status()
+
+        try:
+            access_token = response.json()["access_token"]
+        except Exception as e:
+            raise RuntimeError(f"response: {response.json()}; error: {e}")
         return Strava(access_token=access_token)
 
     def last_week(
