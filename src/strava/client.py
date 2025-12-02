@@ -12,8 +12,12 @@ from pydantic import BaseModel
 
 
 class ActivityType(StrEnum):
+    # a run
     RUN = "run"
+    # generic workout
     WORKOUT = "workout"
+    # a bike ride
+    RIDE = "ride"
 
     @staticmethod
     def parse(string: str) -> ActivityType:
@@ -23,6 +27,8 @@ class ActivityType(StrEnum):
                 return ActivityType.RUN
             case "workout":
                 return ActivityType.WORKOUT
+            case "ride":
+                return ActivityType.RIDE
             case _:
                 raise ValueError(f"unknown activity type '{string}'")
 
@@ -151,6 +157,19 @@ class Strava:
         end = datetime.now()
         beg = datetime.now() - timedelta(days=7)
         return self.activities(beg, end, per_page, enrich_heartrate)
+
+    def week_beginning(
+        self, begin: datetime, per_page: int = 16, enrich_heartrate: bool = True
+    ) -> list[Activity]:
+        """
+        Fetch activities for the week beginning at the specified datetime.
+        :param begin: The begin datetime
+        :param per_page: The number of results to include per page
+        :param enrich_heartrate: Whether or not to enrich with heartrate data, if available
+        :return: The activities
+        """
+        end = begin + timedelta(days=7)
+        return self.activities(begin, end, per_page, enrich_heartrate)
 
     def activities(
         self,

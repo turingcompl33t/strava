@@ -11,6 +11,10 @@ from strava.client import Strava
 def main() -> int:
     client = Strava.from_env()
 
+    # if the script isn't run at the expected day / time, can manually
+    # get the week start here and run client.week_beginning()
+    # begin = pytz.timezone("America/New_York").localize(datetime(year=2025, month=11, day=24, hour=4))
+
     activities = client.last_week()
     print(f"{len(activities)} activities")
 
