@@ -3,6 +3,9 @@ A simple weekly aggregation.
 """
 
 import sys
+from datetime import datetime
+
+import pytz
 
 import strava.util as util
 from strava.client import Strava
@@ -11,12 +14,16 @@ from strava.client import Strava
 def main() -> int:
     client = Strava.from_env()
 
-    # if the script isn't run at the expected day / time, can manually
     # get the week start here and run client.week_beginning()
-    # begin = pytz.timezone("America/New_York").localize(datetime(year=2025, month=12, day=22, hour=4))
-    # activities = client.week_beginning(begin)
+    begin = pytz.timezone("America/New_York").localize(
+        datetime(year=2025, month=12, day=29, hour=4)
+    )
+    activities = client.week_beginning(begin)
 
-    activities = client.last_week()
+    # alternatively, if  this is run at a regular time that captures the
+    # desired week, we can get activities easily with:
+    # activities = client.last_week()
+
     print(f"{len(activities)} activities")
 
     training_time = util.total_duration(activities)
