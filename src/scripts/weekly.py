@@ -2,21 +2,41 @@
 A simple weekly aggregation.
 """
 
+import argparse
 import sys
 from datetime import datetime
 
+import humanize
 import pytz
 
 import strava.util as util
 from strava.client import Strava
 
 
+def _parse_arguments() -> tuple[int, int, int]:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--year", "-y", type=int, required=True, help="The year"
+    )
+    parser.add_argument(
+        "--month", "-m", type=int, required=True, help="The month"
+    )
+    parser.add_argument("--day", "-d", type=int, required=True, help="The day")
+    args = parser.parse_args()
+    return args.year, args.month, args.day
+
+
 def main() -> int:
+    year, month, day = _parse_arguments()
+
     client = Strava.from_env()
 
     # get the week start here and run client.week_beginning()
     begin = pytz.timezone("America/New_York").localize(
-        datetime(year=2025, month=12, day=29, hour=4)
+        datetime(year=year, month=month, day=day, hour=4)
+    )
+    print(
+        f"querying activities for week beginning {humanize.naturaldate(begin)}"
     )
     activities = client.week_beginning(begin)
 
